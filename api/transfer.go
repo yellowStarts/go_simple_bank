@@ -32,9 +32,9 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	}
 
 	arg := db.TransferTxParams{
-		FromAccountID:    req.FromAccountID,
-		ToAccountID: req.FromAccountID,
-		Amount:  req.Amount,
+		FromAccountID: req.FromAccountID,
+		ToAccountID:   req.FromAccountID,
+		Amount:        req.Amount,
 	}
 
 	result, err := server.store.TransferTx(ctx, arg)

@@ -5,7 +5,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const addAccountBalance = `-- name: AddAccountBalance :one
@@ -109,19 +108,12 @@ func (q *Queries) GetAccountForUpdate(ctx context.Context, id int64) (Account, e
 	return i, err
 }
 
-const listAccounts1 = `-- name: ListAccounts :many
+const listAccounts = `-- name: ListAccounts :many
 SELECT id, owner, balance, currency, created_at FROM accounts
 WHERE owner = $1
 ORDER BY id
 LIMIT $2
 OFFSET $3
-`
-
-const listAccounts2 = `-- name: ListAccounts :many
-SELECT id, owner, balance, currency, created_at FROM accounts
-ORDER BY id
-LIMIT $1
-OFFSET $2
 `
 
 type ListAccountsParams struct {
@@ -131,15 +123,7 @@ type ListAccountsParams struct {
 }
 
 func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]Account, error) {
-	var rows *sql.Rows
-	var err error
-
-	if arg.Owner == "" {
-		rows, err = q.db.QueryContext(ctx, listAccounts2,  arg.Limit, arg.Offset)
-	} else {
-		rows, err = q.db.QueryContext(ctx, listAccounts1, arg.Owner, arg.Limit, arg.Offset)
-	}
-
+	rows, err := q.db.QueryContext(ctx, listAccounts, arg.Owner, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
